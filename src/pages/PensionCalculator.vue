@@ -5,7 +5,7 @@ import ResultPanel from '../components/ResultPanel.vue';
 import FormulaPanel from '../components/FormulaPanel.vue';
 import { calculatePension } from '../core/pension';
 import { validatePensionInput } from '../core/validate';
-import { DEFAULT_INPUT, type PensionInput, type PensionOutput } from '../types/pension';
+import { DEFAULT_INPUT, type PensionInput, type PensionOutput, type WageSnapshot } from '../types/pension';
 import { loadInput, saveInput } from '../utils/storage';
 
 const form = ref<PensionInput>(loadInput(DEFAULT_INPUT));
@@ -25,6 +25,30 @@ const output = computed<PensionOutput | null>(() => {
     return null;
   }
   return calculatePension(form.value);
+});
+
+const wageSnapshots = computed<WageSnapshot[]>(() => {
+  const f = form.value;
+  if (f.accountMode !== 'ESTIMATE' || !f.years || f.years <= 0 || !f.monthlyBase) return [];
+
+  const startYear = f.startYear ?? 1996;
+  const monthlyBase = f.monthlyBase;
+  const baseGrowth = f.personalBaseGrowthRate ?? 0;
+  const wageGrowth = f.avgWageGrowthRate ?? 0;
+  const totalYears = f.years;
+
+  const milestones = new Set<number>([10]);
+  if (totalYears >= 20) milestones.add(20);
+  if (totalYears >= 30) milestones.add(30);
+  milestones.add(totalYears);
+
+  return [...milestones].sort((a, b) => a - b).map((y) => ({
+    workedYears: y,
+    calendarYear: startYear + y,
+    personalWage: Math.round(monthlyBase * Math.pow(1 + baseGrowth, y) * 100) / 100,
+    socialWage: Math.round(f.P * Math.pow(1 + wageGrowth, y) * 100) / 100,
+    isRetirement: y === totalYears,
+  }));
 });
 </script>
 
@@ -46,7 +70,7 @@ const output = computed<PensionOutput | null>(() => {
       </el-col>
 
       <el-col :xs="24" :md="12">
-        <ResultPanel :output="output" :errors="validation.errors" :warnings="validation.warnings" />
+        <ResultPanel :output="output" :errors="validation.errors" :warnings="validation.warnings" :wage-snapshots="wageSnapshots" />
       </el-col>
     </el-row>
 

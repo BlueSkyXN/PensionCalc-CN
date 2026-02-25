@@ -1,14 +1,24 @@
 <script setup lang="ts">
-import type { PensionOutput } from '../types/pension';
+import type { PensionOutput, WageSnapshot } from '../types/pension';
 
 defineProps<{
   output: PensionOutput | null;
   errors: string[];
   warnings: string[];
+  wageSnapshots: WageSnapshot[];
 }>();
 
 function toCurrency(value: number): string {
   return `${value.toFixed(2)} 元/月`;
+}
+
+function toWage(value: number): string {
+  return `${value.toFixed(0)} 元`;
+}
+
+function milestoneLabel(s: WageSnapshot): string {
+  const base = `工作第 ${s.workedYears} 年（${s.calendarYear} 年）`;
+  return s.isRetirement ? `${base} · 退休时` : base;
 }
 </script>
 
@@ -57,6 +67,29 @@ function toCurrency(value: number): string {
     </el-card>
 
     <el-empty v-else description="请修正输入项后查看结果" />
+
+    <el-card v-if="wageSnapshots.length > 0" shadow="never">
+      <template #header>
+        <strong>工资增长预测</strong>
+      </template>
+      <el-table :data="wageSnapshots" size="small" border>
+        <el-table-column label="阶段" min-width="200">
+          <template #default="{ row }">
+            <span :class="{ 'retirement-row': row.isRetirement }">{{ milestoneLabel(row) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="月均个人工资" align="right" min-width="130">
+          <template #default="{ row }">
+            <span :class="{ 'retirement-row': row.isRetirement }">{{ toWage(row.personalWage) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="社会平均工资" align="right" min-width="130">
+          <template #default="{ row }">
+            <span :class="{ 'retirement-row': row.isRetirement }">{{ toWage(row.socialWage) }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
   </div>
 </template>
 
@@ -79,5 +112,10 @@ function toCurrency(value: number): string {
 
 .total {
   color: #1d4ed8;
+}
+
+.retirement-row {
+  color: #1d4ed8;
+  font-weight: 600;
 }
 </style>

@@ -5,11 +5,27 @@ import type { AccountMode, PensionInput, RetireAge } from '../types/pension';
 
 const model = defineModel<PensionInput>({ required: true });
 
-const ageOptions = computed(() =>
-  Object.keys(DIVISOR_BY_AGE)
-    .map((age) => Number(age) as RetireAge)
-    .sort((a, b) => a - b),
-);
+const divisor = computed(() => DIVISOR_BY_AGE[model.value.retireAge as RetireAge] ?? '-');
+
+const personalRatePct = computed({
+  get: () => Number(((model.value.personalRate ?? 0) * 100).toFixed(4)),
+  set: (v: number) => { model.value.personalRate = v / 100; },
+});
+
+const annualInterestRatePct = computed({
+  get: () => Number(((model.value.annualInterestRate ?? 0) * 100).toFixed(4)),
+  set: (v: number) => { model.value.annualInterestRate = v / 100; },
+});
+
+const personalBaseGrowthRatePct = computed({
+  get: () => Number(((model.value.personalBaseGrowthRate ?? 0) * 100).toFixed(4)),
+  set: (v: number) => { model.value.personalBaseGrowthRate = v / 100; },
+});
+
+const avgWageGrowthRatePct = computed({
+  get: () => Number(((model.value.avgWageGrowthRate ?? 0) * 100).toFixed(4)),
+  set: (v: number) => { model.value.avgWageGrowthRate = v / 100; },
+});
 
 const accountModes: Array<{ label: string; value: AccountMode }> = [
   { label: '模式 A：直接输入账户储存额', value: 'DIRECT_BALANCE' },
@@ -29,25 +45,30 @@ watch(
 <template>
   <el-form label-width="160px" label-position="top">
     <el-form-item label="退休年龄">
-      <el-select v-model="model.retireAge" style="width: 100%">
-        <el-option
-          v-for="age in ageOptions"
-          :key="age"
-          :label="`${age} 岁（计发月数 ${DIVISOR_BY_AGE[age]}）`"
-          :value="age"
+      <div class="age-input-row">
+        <el-input-number
+          v-model="model.retireAge"
+          :min="40"
+          :max="70"
+          :step="1"
+          :precision="0"
+          controls-position="right"
+          style="width: 140px"
         />
-      </el-select>
+        <span class="age-unit">岁</span>
+        <el-tag type="info" class="divisor-tag">计发月数：{{ divisor }} 个月</el-tag>
+      </div>
     </el-form-item>
 
-    <el-form-item label="退休上年度当地在岗职工月平均工资 P（元）">
+    <el-form-item label="退休上年度当地在岗职工月平均工资（元）">
       <el-input-number v-model="model.P" :min="0" :step="100" :precision="2" style="width: 100%" />
     </el-form-item>
 
-    <el-form-item label="平均缴费指数 i（如 0.6 / 1.0）">
+    <el-form-item label="平均缴费指数（本人历年缴费基数 ÷ 当地社平工资的平均值）">
       <el-input-number v-model="model.i" :min="0" :step="0.1" :precision="3" style="width: 100%" />
     </el-form-item>
 
-    <el-form-item label="累计缴费年限 n（年）">
+    <el-form-item label="累计缴费年限（年）">
       <el-input-number v-model="model.n" :min="0" :step="1" :precision="1" style="width: 100%" />
     </el-form-item>
 
@@ -91,24 +112,71 @@ watch(
         <el-input-number v-model="model.years" :min="0" :step="1" :precision="0" style="width: 100%" />
       </el-form-item>
 
-      <el-form-item label="个人费率（模拟参数，小数，默认 0.08）">
+      <el-form-item label="个人账户缴费比例（职工本人缴费部分，通常为 8%）">
         <el-input-number
-          v-model="model.personalRate"
+          v-model="personalRatePct"
           :min="0"
-          :step="0.01"
-          :precision="4"
+          :max="100"
+          :step="0.5"
+          :precision="2"
           style="width: 100%"
-        />
+        >
+          <template #suffix>%</template>
+        </el-input-number>
       </el-form-item>
 
-      <el-form-item label="年利率（小数，默认 0）">
+      <el-form-item label="个人账户记账利率（年化，0 表示不计息，影响账户余额估算）">
         <el-input-number
-          v-model="model.annualInterestRate"
+          v-model="annualInterestRatePct"
           :min="0"
-          :step="0.01"
-          :precision="4"
+          :max="100"
+          :step="0.1"
+          :precision="2"
           style="width: 100%"
-        />
+        >
+          <template #suffix>%</template>
+        </el-input-number>
+      </el-form-item>
+
+      <el-form-item label="初始就业年份（用于推算各阶段工资水平）">
+        <div class="age-input-row">
+          <el-input-number
+            v-model="model.startYear"
+            :min="1950"
+            :max="2020"
+            :step="1"
+            :precision="0"
+            controls-position="right"
+            style="width: 140px"
+          />
+          <span class="age-unit">年</span>
+        </div>
+      </el-form-item>
+
+      <el-form-item label="个人缴费基数年增长率（每年缴费基数按此比例递增）">
+        <el-input-number
+          v-model="personalBaseGrowthRatePct"
+          :min="0"
+          :max="30"
+          :step="0.5"
+          :precision="2"
+          style="width: 100%"
+        >
+          <template #suffix>%</template>
+        </el-input-number>
+      </el-form-item>
+
+      <el-form-item label="社会平均工资年增长率（用于预测退休时的社平工资）">
+        <el-input-number
+          v-model="avgWageGrowthRatePct"
+          :min="0"
+          :max="30"
+          :step="0.5"
+          :precision="2"
+          style="width: 100%"
+        >
+          <template #suffix>%</template>
+        </el-input-number>
       </el-form-item>
     </template>
 
@@ -133,5 +201,21 @@ watch(
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.age-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.age-unit {
+  color: var(--el-text-color-regular);
+  font-size: 14px;
+}
+
+.divisor-tag {
+  margin-left: 4px;
+  font-size: 13px;
 }
 </style>

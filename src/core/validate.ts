@@ -30,7 +30,7 @@ export function validatePensionInput(input: PensionInput): ValidationResult {
   }
 
   if (!isFiniteNumber(input.retireAge) || !isSupportedAge(input.retireAge)) {
-    errors.push('退休年龄必须在计发月数表中（40/45/50/55/60/65/70）。');
+    errors.push('退休年龄必须在计发月数表中（40–70 岁整数）。');
   }
 
   if (input.accountMode !== 'DIRECT_BALANCE' && input.accountMode !== 'ESTIMATE') {
