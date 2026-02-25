@@ -63,7 +63,7 @@ const wageSnapshots = computed<WageSnapshot[]>(() => {
       <el-col :xs="24" :md="12">
         <el-card shadow="never">
           <template #header>
-            <strong>参数输入</strong>
+            <span class="section-label">参数输入</span>
           </template>
           <InputForm v-model="form" />
         </el-card>
@@ -84,30 +84,71 @@ const wageSnapshots = computed<WageSnapshot[]>(() => {
 .page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .hero {
-  background: #ffffff;
-  border: 1px solid #ebeef5;
-  border-radius: 8px;
-  padding: 16px;
+  background: var(--grad-hero);
+  border: none;
+  border-radius: 20px;
+  padding: 28px 32px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 32px rgba(124, 58, 237, 0.1);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 20%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(110, 231, 183, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .hero h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 26px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #5b21b6 0%, #4338ca 60%, #0891b2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero p {
   margin: 8px 0 0;
-  color: #606266;
+  color: #6d28d9;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7c3aed;
+  letter-spacing: 0.03em;
 }
 
 .formula-section {
-  margin-bottom: 24px;
+  margin-bottom: 8px;
 }
 </style>

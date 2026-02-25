@@ -12,7 +12,7 @@ const divisorRows = computed(() =>
 <template>
   <el-card shadow="never">
     <template #header>
-      <strong>公式与说明（v1）</strong>
+      <span class="section-label">公式与说明（v1）</span>
     </template>
 
     <div class="formula-block">
@@ -32,9 +32,26 @@ const divisorRows = computed(() =>
 </template>
 
 <style scoped>
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7c3aed;
+  letter-spacing: 0.03em;
+}
+
 .formula-block {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  background: linear-gradient(135deg, #f5f3ff 0%, #eff6ff 100%);
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 13.5px;
+  color: #1e1b4b;
+  line-height: 1.7;
+}
+
+.formula-block strong {
+  color: #6d28d9;
 }
 </style>
