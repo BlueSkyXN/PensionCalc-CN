@@ -34,6 +34,22 @@ export function estimateAccountBalance(
   return round2(balance);
 }
 
+export function computeDynamicIndex(
+  monthlyBase: number,
+  P: number,
+  personalBaseGrowthRate: number,
+  avgWageGrowthRate: number,
+  years: number,
+): number {
+  let sum = 0;
+  for (let t = 1; t <= years; t += 1) {
+    const personalWage = monthlyBase * Math.pow(1 + personalBaseGrowthRate, t - 1);
+    const socialWage = P * Math.pow(1 + avgWageGrowthRate, t - 1);
+    sum += personalWage / socialWage;
+  }
+  return Math.round((sum / years) * 10000) / 10000;
+}
+
 export function resolveAccountBalance(input: PensionInput): number {
   if (input.accountMode === 'DIRECT_BALANCE') {
     if (input.accountBalance === undefined) {
@@ -63,7 +79,17 @@ export function calculatePension(input: PensionInput): PensionOutput {
   const P = projectionYears > 0 && (input.avgWageGrowthRate ?? 0) > 0
     ? input.P * Math.pow(1 + (input.avgWageGrowthRate ?? 0), projectionYears)
     : input.P;
-  const basic = round2((P * (1 + input.i) * input.n * 0.01) / 2);
+  const effectiveIndex =
+    input.indexMode === 'DYNAMIC' && input.accountMode === 'ESTIMATE' && projectionYears > 0
+      ? computeDynamicIndex(
+          input.monthlyBase ?? 0,
+          input.P,
+          input.personalBaseGrowthRate ?? 0,
+          input.avgWageGrowthRate ?? 0,
+          projectionYears,
+        )
+      : input.i;
+  const basic = round2((P * (1 + effectiveIndex) * input.n * 0.01) / 2);
   const personal = round2(accountBalance / divisor);
   const transitional = round2(input.enableTransitional ? input.transitional : 0);
   const total = round2(basic + personal + transitional);
@@ -75,5 +101,6 @@ export function calculatePension(input: PensionInput): PensionOutput {
     total,
     accountBalance,
     divisor,
+    effectiveIndex,
   };
 }

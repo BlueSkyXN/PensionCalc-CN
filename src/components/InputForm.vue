@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue';
 import { DIVISOR_BY_AGE } from '../core/divisor-table';
-import type { AccountMode, PensionInput, RetireAge } from '../types/pension';
+import type { AccountMode, IndexMode, PensionInput, RetireAge } from '../types/pension';
+import { computeDynamicIndex } from '../core/pension';
 
 const model = defineModel<PensionInput>({ required: true });
 
@@ -25,6 +26,28 @@ const personalBaseGrowthRatePct = computed({
 const avgWageGrowthRatePct = computed({
   get: () => Number(((model.value.avgWageGrowthRate ?? 0) * 100).toFixed(4)),
   set: (v: number) => { model.value.avgWageGrowthRate = v / 100; },
+});
+
+const indexModes: Array<{ label: string; value: IndexMode }> = [
+  { label: '固定值', value: 'STATIC' },
+  { label: '动态计算', value: 'DYNAMIC' },
+];
+
+const dynamicIndex = computed(() => {
+  const f = model.value;
+  if (
+    f.accountMode !== 'ESTIMATE' ||
+    !f.monthlyBase ||
+    !f.years ||
+    f.years <= 0
+  ) return null;
+  return computeDynamicIndex(
+    f.monthlyBase,
+    f.P,
+    f.personalBaseGrowthRate ?? 0,
+    f.avgWageGrowthRate ?? 0,
+    f.years,
+  );
 });
 
 const accountModes: Array<{ label: string; value: AccountMode }> = [
@@ -65,7 +88,30 @@ watch(
     </el-form-item>
 
     <el-form-item label="平均缴费指数（本人历年缴费基数 ÷ 当地社平工资的平均值）">
-      <el-input-number v-model="model.i" :min="0" :step="0.1" :precision="3" style="width: 100%" />
+      <div class="index-mode-row">
+        <el-radio-group v-model="model.indexMode" size="small">
+          <el-radio-button
+            v-for="opt in indexModes"
+            :key="opt.value"
+            :label="opt.value"
+            :value="opt.value"
+            :disabled="opt.value === 'DYNAMIC' && model.accountMode !== 'ESTIMATE'"
+          >
+            {{ opt.label }}
+          </el-radio-button>
+        </el-radio-group>
+      </div>
+      <div class="index-input-row">
+        <template v-if="model.indexMode === 'STATIC' || model.accountMode !== 'ESTIMATE'">
+          <el-input-number v-model="model.i" :min="0" :step="0.1" :precision="3" style="width: 180px" />
+        </template>
+        <template v-else>
+          <el-tag type="success" class="dynamic-index-tag">
+            {{ dynamicIndex !== null ? dynamicIndex.toFixed(4) : '—' }}
+          </el-tag>
+          <span class="index-hint">（由缴费基数与社平工资参数自动计算）</span>
+        </template>
+      </div>
     </el-form-item>
 
     <el-form-item label="累计缴费年限（年）">
@@ -217,5 +263,25 @@ watch(
 .divisor-tag {
   margin-left: 4px;
   font-size: 13px;
+}
+
+.index-mode-row {
+  margin-bottom: 8px;
+}
+
+.index-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dynamic-index-tag {
+  font-size: 15px;
+  padding: 4px 12px;
+}
+
+.index-hint {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
 }
 </style>

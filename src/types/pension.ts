@@ -1,6 +1,7 @@
 export type RetireAge = 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 | 64 | 65 | 66 | 67 | 68 | 69 | 70;
 
 export type AccountMode = 'DIRECT_BALANCE' | 'ESTIMATE';
+export type IndexMode = 'STATIC' | 'DYNAMIC';
 
 export interface PensionInput {
   retireAge: RetireAge;
@@ -16,6 +17,7 @@ export interface PensionInput {
   personalBaseGrowthRate?: number;
   avgWageGrowthRate?: number;
   startYear?: number;
+  indexMode: IndexMode;
   enableTransitional: boolean;
   transitional: number;
 }
@@ -35,6 +37,7 @@ export interface PensionOutput {
   total: number;
   accountBalance: number;
   divisor: number;
+  effectiveIndex: number;
 }
 
 export interface ValidationResult {
@@ -53,9 +56,10 @@ export const DEFAULT_INPUT: PensionInput = {
   personalRate: 0.08,
   years: 30,
   annualInterestRate: 0.035,
-  personalBaseGrowthRate: 0.02,
+  personalBaseGrowthRate: 0.01,
   avgWageGrowthRate: 0.03,
-  startYear: 1996,
+  startYear: 2025,
+  indexMode: 'STATIC',
   enableTransitional: false,
   transitional: 0,
 };

@@ -62,7 +62,9 @@ function milestoneLabel(s: WageSnapshot): string {
         </el-descriptions-item>
       </el-descriptions>
       <div class="meta">
-        个人账户储存额：{{ output.accountBalance.toFixed(2) }} 元；计发月数：{{ output.divisor }} 个月
+        个人账户储存额：{{ output.accountBalance.toFixed(2) }} 元；
+        计发月数：{{ output.divisor }} 个月；
+        实际使用缴费指数：{{ output.effectiveIndex.toFixed(4) }}
       </div>
     </el-card>
 
