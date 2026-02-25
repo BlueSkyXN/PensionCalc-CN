@@ -35,23 +35,24 @@ const divisorRows = computed(() =>
 .section-label {
   font-size: 13px;
   font-weight: 600;
-  color: #7c3aed;
-  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
 }
 
 .formula-block {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: linear-gradient(135deg, #f5f3ff 0%, #eff6ff 100%);
-  border-radius: 12px;
-  padding: 16px 20px;
+  gap: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
   font-size: 13.5px;
-  color: #1e1b4b;
+  color: var(--text-primary);
   line-height: 1.7;
 }
 
 .formula-block strong {
-  color: #6d28d9;
+  color: var(--primary);
 }
 </style>

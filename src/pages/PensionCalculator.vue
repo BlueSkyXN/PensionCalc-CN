@@ -87,65 +87,48 @@ const wageSnapshots = computed<WageSnapshot[]>(() => {
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .hero {
-  background: var(--grad-hero);
-  border: none;
-  border-radius: 20px;
-  padding: 28px 32px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 32px rgba(124, 58, 237, 0.1);
+  box-shadow: var(--shadow);
 }
 
 .hero::before {
   content: '';
   position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 160px;
-  height: 160px;
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.25) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.hero::after {
-  content: '';
-  position: absolute;
-  bottom: -20px;
-  left: 20%;
-  width: 100px;
-  height: 100px;
-  background: radial-gradient(circle, rgba(110, 231, 183, 0.2) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary) 0%, #60a5fa 50%, #34d399 100%);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .hero h1 {
   margin: 0;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 700;
-  background: linear-gradient(135deg, #5b21b6 0%, #4338ca 60%, #0891b2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-primary);
 }
 
 .hero p {
-  margin: 8px 0 0;
-  color: #6d28d9;
-  font-size: 14px;
-  opacity: 0.75;
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 13.5px;
 }
 
 .section-label {
   font-size: 13px;
   font-weight: 600;
-  color: #7c3aed;
-  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
 }
 
 .formula-section {

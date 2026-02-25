@@ -46,7 +46,7 @@ function milestoneLabel(s: WageSnapshot): string {
         <span class="section-label">实时计算结果</span>
       </template>
 
-      <!-- 合计大牌 -->
+      <!-- 合计横幅 -->
       <div class="total-banner">
         <div class="total-label">退休养老金合计</div>
         <div class="total-value">
@@ -76,7 +76,7 @@ function milestoneLabel(s: WageSnapshot): string {
 
       <!-- 元信息 -->
       <div class="meta-row">
-        <span class="meta-chip">个人账户储存额 <strong>{{ output.accountBalance.toFixed(0) }}</strong> 元</span>
+        <span class="meta-chip">账户储存额 <strong>{{ output.accountBalance.toFixed(0) }}</strong> 元</span>
         <span class="meta-chip">计发月数 <strong>{{ output.divisor }}</strong> 个月</span>
         <span class="meta-chip">实际缴费指数 <strong>{{ output.effectiveIndex.toFixed(4) }}</strong></span>
       </div>
@@ -122,16 +122,16 @@ function milestoneLabel(s: WageSnapshot): string {
 .section-label {
   font-size: 13px;
   font-weight: 600;
-  color: #7c3aed;
-  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
 }
 
-/* ── 合计大牌 ── */
+/* ── 合计横幅 ── */
 .total-banner {
-  background: var(--grad-primary);
-  border-radius: 14px;
-  padding: 20px 24px;
-  margin-bottom: 16px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin-bottom: 14px;
   position: relative;
   overflow: hidden;
 }
@@ -139,88 +139,91 @@ function milestoneLabel(s: WageSnapshot): string {
 .total-banner::after {
   content: '';
   position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 100px;
-  height: 100px;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  top: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
   border-radius: 50%;
 }
 
 .total-label {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 6px;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 4px;
   font-weight: 500;
 }
 
 .total-value {
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 800;
   color: #ffffff;
-  line-height: 1.1;
+  line-height: 1.15;
   letter-spacing: -0.5px;
 }
 
 .total-currency {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
-  margin-right: 2px;
-  opacity: 0.9;
+  margin-right: 1px;
+  opacity: 0.85;
 }
 
 .total-unit {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
-  opacity: 0.75;
+  opacity: 0.7;
   margin-left: 4px;
 }
 
-/* ── 三项细目网格 ── */
+/* ── 三项细目 ── */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 
 .metric-card {
-  border-radius: 12px;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  border: 1px solid transparent;
 }
 
 .metric-label {
   font-size: 11.5px;
   font-weight: 500;
-  opacity: 0.75;
+  margin-bottom: 4px;
+  opacity: 0.8;
 }
 
 .metric-value {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
 }
 
 .metric-unit {
   font-size: 11px;
+  margin-top: 2px;
   opacity: 0.6;
 }
 
 .metric-basic {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  color: #1e40af;
+  background: rgba(59, 130, 246, 0.07);
+  border-color: rgba(59, 130, 246, 0.18);
+  color: #1d4ed8;
 }
 
 .metric-personal {
-  background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
+  background: rgba(16, 185, 129, 0.07);
+  border-color: rgba(16, 185, 129, 0.18);
   color: #065f46;
 }
 
 .metric-transitional {
-  background: linear-gradient(135deg, #fffbeb 0%, #fde68a 100%);
+  background: rgba(245, 158, 11, 0.07);
+  border-color: rgba(245, 158, 11, 0.18);
   color: #92400e;
 }
 
@@ -228,61 +231,63 @@ function milestoneLabel(s: WageSnapshot): string {
 .meta-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .meta-chip {
   font-size: 12px;
-  color: #6b7280;
-  background: #f5f3ff;
-  border: 1px solid #ddd6fe;
-  border-radius: 20px;
-  padding: 3px 12px;
+  color: var(--text-tertiary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  padding: 3px 10px;
 }
 
 .meta-chip strong {
-  color: #5b21b6;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* ── 工资快照 ── */
 .snapshot-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .snapshot-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: #fafafa;
-  border: 1px solid #f3f4f6;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
   gap: 12px;
+  transition: background var(--transition);
 }
 
 .snapshot-row.is-retirement {
-  background: linear-gradient(135deg, #f5f3ff 0%, #eff6ff 100%);
-  border-color: #ddd6fe;
+  background: rgba(59, 130, 246, 0.05);
+  border-color: rgba(59, 130, 246, 0.2);
 }
 
 .snapshot-stage {
   font-size: 13px;
-  color: #374151;
+  color: var(--text-secondary);
   font-weight: 500;
-  min-width: 0;
   flex: 1;
+  min-width: 0;
 }
 
 .snapshot-row.is-retirement .snapshot-stage {
-  color: #5b21b6;
+  color: var(--primary);
   font-weight: 600;
 }
 
 .snapshot-values {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   flex-shrink: 0;
 }
 
@@ -292,17 +297,17 @@ function milestoneLabel(s: WageSnapshot): string {
 
 .snapshot-item-label {
   font-size: 11px;
-  color: #9ca3af;
+  color: var(--text-tertiary);
   margin-bottom: 2px;
 }
 
 .snapshot-item-value {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .snapshot-row.is-retirement .snapshot-item-value {
-  color: #6d28d9;
+  color: var(--primary);
 }
 </style>

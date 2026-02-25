@@ -256,7 +256,7 @@ watch(
 }
 
 .age-unit {
-  color: var(--el-text-color-regular);
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -282,6 +282,6 @@ watch(
 
 .index-hint {
   font-size: 12px;
-  color: var(--el-text-color-secondary);
+  color: var(--text-tertiary);
 }
 </style>
