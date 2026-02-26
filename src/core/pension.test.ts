@@ -73,6 +73,8 @@ describe('养老金计算核心逻辑', () => {
         years: 15,
         personalRate: 0.08,
         annualInterestRate: 0,
+        personalBaseGrowthRate: 0,
+        avgWageGrowthRate: 0,
         enableTransitional: true,
         transitional: 100,
       }),
@@ -88,9 +90,9 @@ describe('养老金计算核心逻辑', () => {
 // 异常测试：验证非法输入时是否抛出预期错误
 // ============================================================
 describe('计算函数异常路径', () => {
-  // 61 岁不在计发月数表中（表中仅含偶数年龄跳跃，61 属于国发文件支持范围外）
+  // 71 岁超出计发月数表支持范围（仅支持 40–70 岁）
   it('不支持的退休年龄会抛出错误', () => {
-    expect(() => getDivisorByAge(61)).toThrow(/不在计发月数表中/);
+    expect(() => getDivisorByAge(71)).toThrow(/不在计发月数表中/);
   });
 
   it('估算函数对非法参数抛出错误', () => {
@@ -204,7 +206,7 @@ describe('输入校验', () => {
   it('退休年龄不在表内时返回错误', () => {
     const result = validatePensionInput(
       buildInput({
-        retireAge: 61 as unknown as PensionInput['retireAge'],
+        retireAge: 71 as unknown as PensionInput['retireAge'],
       }),
     );
 

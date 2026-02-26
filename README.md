@@ -28,6 +28,11 @@ npm run test
 npm run test:coverage
 ```
 
+### 测试约定（避免用例漂移）
+
+- 退休年龄计发月数表当前支持闭区间 `40–70`，越界值（如 `71`）应作为非法输入测试样本。
+- 涉及估算模式的测试建议显式设置 `annualInterestRate`、`personalBaseGrowthRate`、`avgWageGrowthRate` 等关键参数，避免受 `DEFAULT_INPUT` 默认值变化影响。
+
 ## 关键公式
 
 - 基础养老金：`basic = P * (1 + i) / 2 * n * 0.01`
