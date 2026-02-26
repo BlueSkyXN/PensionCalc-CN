@@ -1,5 +1,11 @@
+/*
+ * 全局样式文件
+ * 包含 Element Plus CSS 变量覆盖、自定义设计 token、全局基础样式、组件样式定制
+ */
+
 /* ── Element Plus 全局变量覆盖 ── */
 :root {
+  /* 主色调：蓝色系，覆盖 Element Plus 默认主题色 */
   --el-color-primary: #3b82f6;
   --el-color-primary-light-3: #60a5fa;
   --el-color-primary-light-5: #93c5fd;
@@ -7,52 +13,65 @@
   --el-color-primary-light-8: #dbeafe;
   --el-color-primary-light-9: #eff6ff;
   --el-color-primary-dark-2: #2563eb;
+  /* 圆角：统一加大，视觉更柔和 */
   --el-border-radius-base: 8px;
   --el-border-radius-small: 6px;
   --el-border-radius-round: 9999px;
   --el-box-shadow-light: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 
   /* ── 设计 token ── */
+
+  /* 品牌色：常规 / 悬停 / 按下 三态 */
   --primary:        #3b82f6;
   --primary-hover:  #2563eb;
   --primary-active: #1d4ed8;
 
+  /* 语义色：成功 / 警告 / 错误 */
   --success: #10b981;
   --warning: #f59e0b;
   --error:   #ef4444;
 
+  /* 背景色：页面底 / 卡片 / 次级区域 / 悬停态 */
   --bg-page:      #f3f4f6;
   --bg-card:      #ffffff;
   --bg-secondary: #f9fafb;
   --bg-hover:     #e5e7eb;
 
+  /* 文字色：主要 / 次要 / 辅助 */
   --text-primary:   #1f2937;
   --text-secondary: #6b7280;
   --text-tertiary:  #9ca3af;
 
+  /* 边框色：默认 / 悬停 */
   --border:       #e5e7eb;
   --border-hover: #d1d5db;
 
+  /* 阴影：小 / 中 / 大，用于卡片层级区分 */
   --shadow:    0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
 
+  /* 圆角：小 / 默认 / 大 */
   --radius-sm: 6px;
   --radius:    8px;
   --radius-lg: 12px;
 
+  /* 过渡动画时长 */
   --transition: 150ms ease;
 
+  /* 全局字体栈：优先系统字体，中文回退至 PingFang / 雅黑 */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
     'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   line-height: 1.6;
   color: var(--text-primary);
 }
 
+/* 全局盒模型：border-box 避免 padding 撑大元素 */
 * {
   box-sizing: border-box;
 }
 
+/* 页面基础样式 */
 body {
   margin: 0;
   background-color: var(--bg-page);

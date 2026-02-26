@@ -1,9 +1,29 @@
+/**
+ * @file 养老金计算核心模块单元测试
+ *
+ * 测试覆盖三个维度：
+ *   1. 养老金计算核心逻辑 —— 正向测试：直接输入模式 / 估算模式下的计算结果验证
+ *   2. 计算函数异常路径   —— 异常测试：非法参数、缺少必填字段时是否正确抛出 Error
+ *   3. 输入校验           —— 校验规则测试：各字段边界值、模式分支、warnings 提示
+ *
+ * 依赖模块：
+ *   - pension         calculatePension / estimateAccountBalance / resolveAccountBalance
+ *   - divisor-table   getDivisorByAge
+ *   - validate        validatePensionInput
+ *   - types/pension   DEFAULT_INPUT（默认输入常量）/ PensionInput 类型
+ */
+
 import { describe, expect, it } from 'vitest';
 import { calculatePension, estimateAccountBalance, resolveAccountBalance } from './pension';
 import { getDivisorByAge } from './divisor-table';
 import { validatePensionInput } from './validate';
 import { DEFAULT_INPUT, type PensionInput } from '../types/pension';
 
+/**
+ * 测试辅助函数：基于 DEFAULT_INPUT 生成测试用 PensionInput
+ * @param overrides - 需要覆盖的字段（Partial<PensionInput>）
+ * @returns 合并后的完整 PensionInput 对象
+ */
 function buildInput(overrides: Partial<PensionInput> = {}): PensionInput {
   return {
     ...DEFAULT_INPUT,
@@ -11,7 +31,11 @@ function buildInput(overrides: Partial<PensionInput> = {}): PensionInput {
   };
 }
 
+// ============================================================
+// 正向测试：验证核心计算逻辑的数值正确性
+// ============================================================
 describe('养老金计算核心逻辑', () => {
+  // 场景：用户直接输入个人账户余额，验证基础养老金、个人账户养老金及总额
   it('按直接输入账户储存额计算退休养老金', () => {
     const output = calculatePension(
       buildInput({
@@ -32,7 +56,9 @@ describe('养老金计算核心逻辑', () => {
     expect(output.divisor).toBe(139);
   });
 
+  // 场景：用户选择估算模式，先验证 estimateAccountBalance 的正确性，再验证端到端结果
   it('按估算模式计算个人账户储存额', () => {
+    // 月缴费基数 5000，缴费 15 年，费率 8%，无利息 → 5000×0.08×12×15 = 72000
     const balance = estimateAccountBalance(5000, 15, 0.08, 0);
     expect(balance).toBe(72000);
 
@@ -58,7 +84,11 @@ describe('养老金计算核心逻辑', () => {
   });
 });
 
+// ============================================================
+// 异常测试：验证非法输入时是否抛出预期错误
+// ============================================================
 describe('计算函数异常路径', () => {
+  // 61 岁不在计发月数表中（表中仅含偶数年龄跳跃，61 属于国发文件支持范围外）
   it('不支持的退休年龄会抛出错误', () => {
     expect(() => getDivisorByAge(61)).toThrow(/不在计发月数表中/);
   });
@@ -92,6 +122,9 @@ describe('计算函数异常路径', () => {
   });
 });
 
+// ============================================================
+// 校验规则测试：验证 validatePensionInput 对各字段的校验逻辑
+// ============================================================
 describe('输入校验', () => {
   it('缴费年限不足 15 年时返回提示', () => {
     const result = validatePensionInput(

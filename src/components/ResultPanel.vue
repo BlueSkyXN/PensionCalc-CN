@@ -1,4 +1,20 @@
 <script setup lang="ts">
+/**
+ * ResultPanel.vue — 养老金计算结果展示面板
+ *
+ * 功能：展示养老金计算结果、校验提示以及工资增长预测表。
+ *
+ * Props：
+ *   - output (PensionOutput | null)：养老金计算结果，校验失败时为 null
+ *   - errors (string[])：输入校验错误列表（阻断计算）
+ *   - warnings (string[])：输入校验警告列表（不阻断计算）
+ *   - wageSnapshots (WageSnapshot[])：各里程碑年份的工资增长预测快照
+ *
+ * 工具函数：
+ *   - fmt(value): 格式化数字为两位小数字符串（用于金额展示）
+ *   - toWage(value): 格式化工资为整数字符串
+ *   - milestoneLabel(s): 生成工资快照的里程碑标签（含工作年数、日历年份、是否退休年）
+ */
 import type { PensionOutput, WageSnapshot } from '../types/pension';
 
 defineProps<{
@@ -8,14 +24,21 @@ defineProps<{
   wageSnapshots: WageSnapshot[];
 }>();
 
+/** 格式化金额为两位小数 */
 function fmt(value: number): string {
   return value.toFixed(2);
 }
 
+/** 格式化工资为整数（用于工资预测表） */
 function toWage(value: number): string {
   return value.toFixed(0);
 }
 
+/**
+ * 生成工资快照的里程碑标签
+ * @param s - 工资快照数据，包含工作年数、日历年份和是否为退休年
+ * @returns 如 "工作第 10 年 · 2030 年" 或 "工作第 30 年 · 2050 年 · 退休时"
+ */
 function milestoneLabel(s: WageSnapshot): string {
   const base = `工作第 ${s.workedYears} 年 · ${s.calendarYear} 年`;
   return s.isRetirement ? `${base} · 退休时` : base;
@@ -24,6 +47,7 @@ function milestoneLabel(s: WageSnapshot): string {
 
 <template>
   <div class="result-panel">
+    <!-- 校验错误提示（存在错误时阻断计算结果展示） -->
     <el-alert
       v-for="error in errors"
       :key="error"
@@ -32,6 +56,7 @@ function milestoneLabel(s: WageSnapshot): string {
       :closable="false"
       show-icon
     />
+    <!-- 校验警告提示（不阻断计算） -->
     <el-alert
       v-for="warning in warnings"
       :key="warning"
@@ -41,6 +66,7 @@ function milestoneLabel(s: WageSnapshot): string {
       show-icon
     />
 
+    <!-- 计算结果卡片：仅在校验通过时展示 -->
     <el-card v-if="output" shadow="never">
       <template #header>
         <span class="section-label">实时计算结果</span>
@@ -74,7 +100,7 @@ function milestoneLabel(s: WageSnapshot): string {
         </div>
       </div>
 
-      <!-- 元信息 -->
+      <!-- 元信息 chips：账户储存额、计发月数、实际缴费指数 -->
       <div class="meta-row">
         <span class="meta-chip">账户储存额 <strong>{{ output.accountBalance.toFixed(0) }}</strong> 元</span>
         <span class="meta-chip">计发月数 <strong>{{ output.divisor }}</strong> 个月</span>
@@ -126,7 +152,7 @@ function milestoneLabel(s: WageSnapshot): string {
   letter-spacing: 0.02em;
 }
 
-/* ── 合计横幅 ── */
+/* ── 合计横幅：蓝色渐变背景 + 右上角装饰光晕 ── */
 .total-banner {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   border-radius: var(--radius);
@@ -176,7 +202,7 @@ function milestoneLabel(s: WageSnapshot): string {
   margin-left: 4px;
 }
 
-/* ── 三项细目 ── */
+/* ── 三项细目卡片：基础/个人账户/过渡性养老金各自配色 ── */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -248,7 +274,7 @@ function milestoneLabel(s: WageSnapshot): string {
   font-weight: 600;
 }
 
-/* ── 工资快照 ── */
+/* ── 工资快照列表：退休年行高亮显示 ── */
 .snapshot-list {
   display: flex;
   flex-direction: column;
